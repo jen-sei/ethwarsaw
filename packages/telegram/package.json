@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
-    "start-ts": "ts-node program.ts",
+    "start": "node dist/src/index.js",
+    "start-ts": "ts-node ./src/index.ts",
     "prepack": "yarn build",
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "eslint --ext .js,.ts --ignore-path .gitignore --fix ."
