@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "target": "es2021" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "jsx": "preserve" /* Specify what JSX code is generated. */,
+    "experimentalDecorators": true /* Enable experimental support for TC39 stage 2 draft decorators. */,
+
+    /* Modules */
+    "module": "CommonJS" /* Specify what module code is generated. */,
+    "rootDir": "." /* Specify the root folder within your source files. */,
+    "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
+    "types": [
+      "node"
+    ] /* Specify type package names to be included without being referenced in a source file. */,
+    "resolveJsonModule": true /* Enable importing .json files. */,
+    /* Emit */
+    "sourceMap": true /* Create source map files for emitted JavaScript files. */,
+    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
+    "importHelpers": true /* Allow importing helper functions from tslib once per project, instead of including them per-file. */,
+    /* Interop Constraints */
+    "allowSyntheticDefaultImports": true /* Allow 'import x from y' when a module doesn't have a default export. */,
+    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
+    /* Type Checking */
+    // "strict": true /* Enable all strict type-checking options. */,
+    /* Completeness */
+    // "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    //
+    //
+    /* Server tsconfig.json*/
+    "typeRoots": ["global.d.ts"],
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "exclude": ["node_modules", "dist", "**/*spec.ts"]
+}
