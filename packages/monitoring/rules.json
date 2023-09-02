@@ -1,0 +1,16 @@
+[
+  {
+    "chainID": 42220,
+    "contractAddress": "0xef4229c8c3250c675f21bcefa42f58efbff6002a",
+    "eventABIString": "event Transfer(address indexed from, address indexed to, uint256 amount)",
+    "addressArgument": "from",
+    "nftType": "fluffe1"
+  },
+  {
+    "chainID": 42220,
+    "contractAddress": "0xef4229c8c3250c675f21bcefa42f58efbff6002a",
+    "eventABIString": "event Transfer(address indexed from, address indexed to, uint256 amount)",
+    "addressArgument": "to",
+    "nftType": "fluffe2"
+  }
+]
