@@ -12,6 +12,7 @@ export class RedisService {
     const userKey = `user:${userAddress}`;
     return this.redis.hExists(userKey, 'isRegistered');
   }
+
   async registerUser(userAddress: string): Promise<boolean> {
     const chatSecret = randomBytes(48).toString('hex');
     const userKey = `user:${userAddress}`;
@@ -33,5 +34,10 @@ export class RedisService {
     });
 
     return true;
+  }
+
+  async getUserChatSecret(userAddress: string): Promise<string | undefined> {
+    const userKey = `user:${userAddress}`;
+    return await this.redis.hGet(userKey, 'chatSecret');
   }
 }

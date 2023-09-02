@@ -65,7 +65,7 @@ export class SiweController {
   @Get('/me')
   async getMe(@Res() res: Response, @Req() req: Request) {
     console.log(req.session);
-    if (!req.session.siwe) {
+    if (!req.session.siwe || !req.session.siwe.address) {
       return res.status(401).json({
         authenticated: false,
         address: null,
@@ -73,9 +73,14 @@ export class SiweController {
       });
     }
 
+    const chatSecret = await this.redisService.getUserChatSecret(
+      req.session.siwe.address,
+    );
+
     return res.json({
       authenticated: true,
       address: req.session.siwe.address,
+      chatSecret,
       message: null,
     });
   }

@@ -44,15 +44,16 @@ export async function signIn(
 
 export type SessionInfo = {
   authenticated: boolean;
-  adderss: string;
+  address: string;
   message: string;
+  chatSecret: string;
 };
 export async function getUserSession(): Promise<SessionInfo> {
   const res = await fetch(`${API_HOSTNAME}/siwe/me`, {
     credentials: "include",
   });
 
-  const info: SessionInfo = res.json();
+  const info: SessionInfo = await res.json();
 
   return info;
 }

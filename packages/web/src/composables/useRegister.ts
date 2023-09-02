@@ -17,6 +17,7 @@ export const useRegister = function (
   const canRegister = ref(false);
   const isRegistered = ref(false);
   const error: Ref<string | undefined> = ref(undefined);
+  const chatSecret: Ref<string | undefined> = ref(undefined);
 
   async function register() {
     if (!address.value || !chainId.value) {
@@ -35,10 +36,16 @@ export const useRegister = function (
     try {
       const signature = await signMessageAsync({ message });
       await signIn(message, signature, address.value);
-      // isRegistered.value = true;
       await checkConnection();
+      tryNavigateToTelegram();
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  function tryNavigateToTelegram() {
+    if (chatSecret.value) {
+      window.open(`https://t.me/our_bot_username?start=${chatSecret.value}`);
     }
   }
 
@@ -47,8 +54,10 @@ export const useRegister = function (
 
     if (userSession.authenticated) {
       isRegistered.value = true;
+      chatSecret.value = userSession.chatSecret;
     } else {
       isRegistered.value = false;
+      chatSecret.value = userSession.chatSecret;
     }
   }
 
@@ -58,6 +67,8 @@ export const useRegister = function (
     register,
     canRegister,
     isRegistered,
+    chatSecret,
+    tryNavigateToTelegram,
     error,
   };
 };
