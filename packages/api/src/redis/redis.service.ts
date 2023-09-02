@@ -10,7 +10,7 @@ export class RedisService {
 
   async userExists(userAddress: string): Promise<boolean> {
     const userKey = `user:${userAddress}`;
-    return this.redis.hExists(userKey, 'isRegistered');
+    return await this.redis.hExists(userKey, 'isRegistered');
   }
 
   async registerUser(userAddress: string): Promise<boolean> {
@@ -39,5 +39,30 @@ export class RedisService {
   async getUserChatSecret(userAddress: string): Promise<string | undefined> {
     const userKey = `user:${userAddress}`;
     return await this.redis.hGet(userKey, 'chatSecret');
+  }
+
+  async encounterGameExists(encounterId: string): Promise<boolean> {
+    return (await this.redis.exists(`game:${encounterId}`)) === 1;
+  }
+
+  async getEncounterGame(encounterId: string): Promise<string[]> {
+    return await this.redis.hmGet(`game:${encounterId}`, [
+      'status',
+      'answer',
+      'correctAnswer',
+    ]);
+  }
+
+  async submitEncounterGameAnswer(
+    encounterId: string,
+    answerIndex: string,
+  ): Promise<void> {
+    const [_, __, correctAnswer] = await this.getEncounterGame(encounterId);
+    const isAnswerCorrect = answerIndex === correctAnswer;
+
+    await this.redis.hSet(`game:${encounterId}`, {
+      answer: answerIndex,
+      status: isAnswerCorrect ? 'success' : 'failed',
+    });
   }
 }

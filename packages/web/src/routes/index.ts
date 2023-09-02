@@ -9,9 +9,14 @@ export default createRouter({
       component: () => import("../views/Home.vue"),
     },
     {
-      path: "/claim",
+      path: "/claim/:encounterId",
       name: "Claim",
       component: () => import("../views/Claim.vue"),
+    },
+    {
+      path: "/game/:encounterId",
+      name: "Claim",
+      component: () => import("../views/Game.vue"),
     },
   ],
 });

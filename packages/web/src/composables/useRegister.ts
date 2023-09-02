@@ -45,7 +45,7 @@ export const useRegister = function (
 
   function tryNavigateToTelegram() {
     if (chatSecret.value) {
-      window.open(`https://t.me/our_bot_username?start=${chatSecret.value}`);
+      window.open(`https://t.me/MysteraliceBot?start=${chatSecret.value}`);
     }
   }
 

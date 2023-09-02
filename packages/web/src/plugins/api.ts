@@ -57,3 +57,35 @@ export async function getUserSession(): Promise<SessionInfo> {
 
   return info;
 }
+
+export type Response<T> = {
+  message: string;
+  data: T | undefined;
+};
+export type EncounterGame = {
+  status: string;
+  answer: string;
+  correctAnswer?: string;
+};
+export async function getEncounterGame(
+  encounterId: string
+): Promise<Response<EncounterGame>> {
+  const res = await fetch(`${API_HOSTNAME}/encounters/game/${encounterId}`);
+
+  return await res.json();
+}
+
+export async function submitGameAnswer(
+  encounterId: string,
+  answerIndex: string
+): Promise<Response<EncounterGame>> {
+  const res = await fetch(
+    `${API_HOSTNAME}/encounters/game/${encounterId}/${answerIndex}`,
+    {
+      method: "POST",
+      credentials: "include",
+    }
+  );
+
+  return res.json();
+}
