@@ -14,7 +14,7 @@ export class RedisService {
   }
 
   async registerUser(userAddress: string): Promise<boolean> {
-    const chatSecret = randomBytes(48).toString('hex');
+    const chatSecret = randomBytes(48).toString('base64');
     const userKey = `user:${userAddress}`;
     const userChatSecretKey = `userChatSecret:${chatSecret}`;
     const userExists = await this.redis.hExists(userKey, 'isRegistered');
