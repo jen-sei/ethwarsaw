@@ -1,34 +1,66 @@
 <template>
   <section
-    class="bg-gray-900 h-screen flex justify-center items-center gap-x-16 text-white"
+    class="bg-gray-900 h-screen flex flex-col justify-center items-center gap-x-16 text-white"
   >
-    <div
-      class="w-[300px] h-[420px] bg-transparent cursor-pointer group perspective"
-    >
-      <div
-        class="relative preserve-3d my-rotate-y-180 w-full h-full duration-1000"
-      >
-        <div class="absolute backface-hidden border-2 w-full h-full">
-          <img src="/card-thumbnail.gif" class="w-full h-full" />
-        </div>
-        <div
-          class="absolute my-rotate-y-180 backface-hidden w-full h-full bg-gray-100 overflow-hidden"
-        >
-          <div
-            class="text-center flex flex-col items-center justify-center h-full text-gray-800 px-2 pb-24"
-          >
-            <ClaimButton></ClaimButton>
-          </div>
-        </div>
-      </div>
+    <div class="w-[300px] h-[420px] bg-transparent group perspective">
+      <img src="/card-thumbnail.gif" class="w-full h-full" />
+    </div>
+    <div class="text-center flex flex-col items-center justify-center pt-4">
+      <ConnectButton
+        v-if="!isConnected"
+        :chain-id="chainId"
+        class="bg-white text-black"
+      ></ConnectButton>
+      <Button v-else @click="handleClaimClick" class="bg-white text-black">
+        Claim
+      </Button>
     </div>
   </section>
 </template>
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
-import ClaimButton from "../components/ClaimButton.vue";
+import { useAccount, useSwitchNetwork, useNetwork } from "use-wagmi";
+import { useClaim } from "../composables/useClaim";
+import ConnectButton from "../components/ConnectButton.vue";
+import Button from "../components/common/Button.vue";
 
+const { isConnected } = useAccount();
+const { chain } = useNetwork();
+const { switchNetworkAsync } = useSwitchNetwork();
+const props = defineProps();
+console.log(props);
 const {
   params: { encounterId },
+  query: {
+    chainId: queryChainId,
+    to,
+    tokenId,
+    uriIndex,
+    authorizationSignature,
+  },
 } = useRoute();
+
+const chainId = parseInt(queryChainId as string) || 1;
+
+const { error, isLoading, isSuccess, claim } = useClaim();
+
+async function handleClaimClick() {
+  if (chain && chain.value?.id !== chainId) {
+    const newChain = await switchNetworkAsync(chainId);
+    if (newChain.id !== chainId) {
+      return false;
+    }
+  }
+
+  if (!to || !tokenId || !uriIndex || !authorizationSignature) {
+    throw Error("Cannot claim due to missing parameters.");
+  }
+
+  await claim(
+    to.toString(),
+    tokenId.toString(),
+    uriIndex.toString(),
+    authorizationSignature.toString()
+  );
+}
 </script>

@@ -15,7 +15,7 @@ export default createRouter({
     },
     {
       path: "/game/:encounterId",
-      name: "Claim",
+      name: "Game",
       component: () => import("../views/Game.vue"),
     },
   ],
