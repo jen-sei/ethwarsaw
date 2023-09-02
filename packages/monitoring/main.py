@@ -8,10 +8,11 @@ import random
 import time
 import redis
 from web3 import Web3, HTTPProvider
-from eth_utils.abi import event_signature_to_log_topic
 from eth_utils.conversions import to_hex
 from eth_utils.address import to_checksum_address
 from eth_utils.crypto import keccak
+
+NEW_ENCOUNTERS_CHANNEL_NAME = "newEncounters"
 
 REDIS_HOST = os.environ["REDIS_HOST"]
 REDIS_PORT = int(os.environ["REDIS_PORT"])
@@ -38,7 +39,7 @@ def load_rules():
 
 def monitor(w3, r, rules):
     prev_block_number = w3.eth.block_number
-    # prev_block_number = 21192556
+    prev_block_number = 21192556
     while True:
         current_block_number = w3.eth.block_number
         block_number = min(current_block_number, prev_block_number + MAX_BLOCK_RANGE)
@@ -124,7 +125,7 @@ def store_encounter(r, rule, log, user_address):
         "chainId": rule["chainID"],
         "blockNumber": log["blockNumber"],
         "logIndex": log["logIndex"],
-        "txHash": log["transactionHash"],
+        "txHash": to_hex(log["transactionHash"]),
         "contractAddress": rule["contractAddress"],
         "user": make_user_key(user_address),
         "nftType": rule["nftType"],
@@ -143,6 +144,8 @@ def store_encounter(r, rule, log, user_address):
 
     user_encounters_key = make_user_encounters_key(user_address)
     r.rpush(user_encounters_key, encounter_key)
+
+    r.publish(NEW_ENCOUNTERS_CHANNEL_NAME, encounter_key)
 
 
 if __name__ == "__main__":
