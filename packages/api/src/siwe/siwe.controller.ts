@@ -40,6 +40,8 @@ export class SiweController {
         ? parseInt(message.expirationTime)
         : undefined;
 
+      await this.redisService.registerUser(verifyDto.userAddress);
+
       req.session.save(() => res.status(200).send(true));
     } catch (e) {
       req.session.siwe = undefined;
