@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Res, Session } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, Session } from '@nestjs/common';
 import { generateNonce, SiweMessage, SiweErrorType } from 'siwe';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { RedisService } from 'src/redis/redis.service';
 import { VerifyDto } from 'src/redis/dto';
 
@@ -9,61 +9,53 @@ export class SiweController {
   constructor(private readonly redisService: RedisService) {}
 
   @Get('/nonce')
-  getNonce(
-    @Res() res: Response,
-    @Session() session: Record<string, any>,
-  ): void {
-    session.nonce = generateNonce();
+  getNonce(@Res() res: Response, @Req() req: Request): void {
+    req.session.nonce = generateNonce();
     res.setHeader('Content-Type', 'text/plain');
-    res.status(200).send(session.nonce);
+    res.status(200).send(req.session.nonce);
   }
 
   @Post('/verify')
   async verify(
     @Body() verifyDto: VerifyDto,
     @Res() res: Response,
-    @Session() session: Record<string, any>,
-  ): Promise<undefined> {
-    if (await this.redisService.userExists(verifyDto.userAddress)) {
-      res.json({
-        status: 'exists',
-        message: 'You are already registered.',
-      });
-    }
+    @Req() req: Request,
+  ): Promise<void> {
     try {
-      const SIWEObject = new SiweMessage(verifyDto.message);
+      if (!req.body.message && !req.session.nonce) {
+        res
+          .status(422)
+          .json({ message: 'Expected prepareMessage object as body.' });
+        return;
+      }
+
+      const SIWEObject = new SiweMessage(req.body.message);
       const { data: message } = await SIWEObject.verify({
-        signature: verifyDto.signature,
-        nonce: session.nonce,
+        signature: req.body.signature,
+        nonce: req.session.nonce,
       });
-      session.cookie.expires = new Date(message.expirationTime ?? -1);
 
-      await this.redisService.registerUser(verifyDto.userAddress);
+      req.session.siwe = message;
+      req.session.cookie.maxAge = message.expirationTime
+        ? parseInt(message.expirationTime)
+        : undefined;
 
-      session.save(() =>
-        res.status(200).json({
-          status: 'success',
-          message: 'Welcome to Fluffe!',
-        }),
-      );
+      req.session.save(() => res.status(200).send(true));
     } catch (e) {
-      session.siwe = null;
-      session.nonce = null;
+      req.session.siwe = undefined;
+      req.session.nonce = undefined;
       console.error(e);
-
-      const responseBody = { status: 'failed', message: e.message };
-
       switch (e) {
         case SiweErrorType.EXPIRED_MESSAGE: {
-          session.save(() => res.status(440).json(responseBody));
+          req.session.save(() => res.status(440).json({ message: e.message }));
           break;
         }
         case SiweErrorType.INVALID_SIGNATURE: {
-          session.save(() => res.status(422).json(responseBody));
+          req.session.save(() => res.status(422).json({ message: e.message }));
           break;
         }
         default: {
-          session.save(() => res.status(500).json(responseBody));
+          req.session.save(() => res.status(500).json({ message: e.message }));
           break;
         }
       }
@@ -71,8 +63,9 @@ export class SiweController {
   }
 
   @Get('/me')
-  async getMe(@Res() res: Response, @Session() session: Record<string, any>) {
-    if (!session.siwe) {
+  async getMe(@Res() res: Response, @Req() req: Request) {
+    console.log(req.session);
+    if (!req.session.siwe) {
       return res.status(401).json({
         authenticated: false,
         address: null,
@@ -82,7 +75,7 @@ export class SiweController {
 
     return res.json({
       authenticated: true,
-      address: session.siwe.address,
+      address: req.session.siwe.address,
       message: null,
     });
   }

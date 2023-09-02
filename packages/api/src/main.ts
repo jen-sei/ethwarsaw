@@ -7,8 +7,8 @@ async function bootstrap() {
 
   app.use(
     Session({
-      name: 'siwe',
-      secret: 'siwe-secret',
+      name: 'siwe-quickstart',
+      secret: 'siwe-quickstart-secret',
       resave: true,
       saveUninitialized: true,
       cookie: { secure: false, sameSite: true },

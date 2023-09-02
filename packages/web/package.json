@@ -9,10 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.3.4"
+    "ethers": "^6.7.1",
+    "pinia": "^2.1.6",
+    "siwe": "^2.1.4",
+    "use-wagmi": "^0.3.10",
+    "viem": "^1.9.5",
+    "vue": "^3.3.4",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vue-tsc": "^1.8.5"
