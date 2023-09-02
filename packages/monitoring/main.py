@@ -48,6 +48,9 @@ def monitor(w3, r, rules):
             logs = fetch_logs_in_range(w3, rule, (prev_block_number, block_number))
             for log in logs:
                 user_address = get_address_from_log(rule, log)
+                if random.random() >= rule["probability"]:
+                    print(f"unlucky user missed encounter")
+                    continue
                 if is_registered_user(r, user_address):
                     print(f"encounter for user {to_checksum_address(user_address)}")
                     store_encounter(r, rule, log, user_address)
