@@ -1,16 +1,10 @@
 [
   {
     "chainID": 42220,
-    "contractAddress": "0xef4229c8c3250c675f21bcefa42f58efbff6002a",
-    "eventABIString": "event Transfer(address indexed from, address indexed to, uint256 amount)",
-    "addressArgument": "from",
+    "contractAddress": "0xD7cb7686Ed438c55149ded0D4762c70AF3D9923a",
+    "eventTopics": ["0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822"],
+    "addressDataIndex": null,
+    "addressTopicIndex": 1,
     "nftType": "fluffe1"
-  },
-  {
-    "chainID": 42220,
-    "contractAddress": "0xef4229c8c3250c675f21bcefa42f58efbff6002a",
-    "eventABIString": "event Transfer(address indexed from, address indexed to, uint256 amount)",
-    "addressArgument": "to",
-    "nftType": "fluffe2"
   }
 ]
