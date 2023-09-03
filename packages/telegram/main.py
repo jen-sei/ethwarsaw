@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import asyncio
+import base64
 import logging
 import os
 import redis.asyncio as redis
@@ -42,6 +43,14 @@ dialogue = load_dialogue()
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
 
+def make_user_key(address):
+    return f"user:{address}"
+
+
+def make_chat_secret_key(chat_secret):
+    return f"userChatSecret:{chat_secret}"
+
+
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id, text=dialogue["unknown"]
@@ -49,6 +58,17 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_secret = context.args[0]
+    chat_secret_key = make_chat_secret_key(chat_secret)
+    address = await r.hget(chat_secret_key, "address")
+
+    if not address:
+        await update.message.reply_text(text=dialogue["invalid_chat_secret"])
+        return
+
+    user_key = make_user_key(address)
+    await r.hset(user_key, "chatId", str(update.message.chat_id))
+
     await update.message.reply_text(text=dialogue["welcome"])
 
 
