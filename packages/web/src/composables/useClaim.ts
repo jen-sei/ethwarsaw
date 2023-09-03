@@ -1,16 +1,31 @@
-import { useSendTransaction } from "use-wagmi";
+import { useSendTransaction, useContractWrite } from "use-wagmi";
+import { DEPLOYED_ADDRESSES, isChainSupported } from "../config/deployment";
+import FluffeABI from "../assets/abi/Fluffe.json";
 
-export function useClaim() {
-  const { isSuccess, isLoading, sendTransactionAsync, error } =
-    useSendTransaction();
+export const useClaim = function (chainId: number) {
+  const contractAddress = DEPLOYED_ADDRESSES.Fluffe[chainId];
+  const { writeAsync, isLoading, isSuccess, error } = useContractWrite({
+    abi: FluffeABI,
+    address: contractAddress,
+    functionName: "mint",
+  });
 
-  function claim(
+  async function claim(
     to: string,
     tokenId: string,
     uriIndex: string,
     authorizationSignature: string
   ) {
-    // ...
+    if (!isChainSupported(chainId)) {
+      console.log("Chain not supported.");
+      return false;
+    }
+
+    const hash = await writeAsync({
+      args: [to, tokenId, uriIndex, authorizationSignature],
+    });
+
+    return hash;
   }
 
   return {
@@ -19,4 +34,4 @@ export function useClaim() {
     claim,
     error,
   };
-}
+};

@@ -7,7 +7,9 @@
 const hre = require("hardhat");
 
 async function main() {
-  const fluffe = await hre.ethers.deployContract("Fluffe");
+  const fluffe = await hre.ethers.deployContract("Fluffe", {
+    gasLimit: "0x1000000",
+  });
 
   await fluffe.waitForDeployment();
 

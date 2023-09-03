@@ -66,7 +66,6 @@ export class SiweController {
 
   @Get('/me')
   async getMe(@Res() res: Response, @Req() req: Request) {
-    console.log(req.session);
     if (!req.session.siwe || !req.session.siwe.address) {
       return res.status(401).json({
         authenticated: false,
