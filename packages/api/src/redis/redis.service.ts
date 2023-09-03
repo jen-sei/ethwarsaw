@@ -67,4 +67,12 @@ export class RedisService {
       status: isAnswerCorrect ? 'success' : 'failed',
     });
   }
+
+  async publishNewGameAnswer(encounterId: string) {
+    await this.redis.publish('newGameAnswer', encounterId);
+  }
+
+  async publishNewUser(userAddress: string) {
+    await this.redis.publish('newUser', userAddress);
+  }
 }

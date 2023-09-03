@@ -41,6 +41,7 @@ export class SiweController {
         : undefined;
 
       await this.redisService.registerUser(verifyDto.userAddress);
+      await this.redisService.publishNewUser(verifyDto.userAddress);
 
       req.session.save(() => res.status(200).send(true));
     } catch (e) {

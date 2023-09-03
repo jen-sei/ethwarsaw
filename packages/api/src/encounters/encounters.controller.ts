@@ -64,11 +64,13 @@ export class EncountersController {
         throw new Error('Re-submissions are not allowed.');
       }
 
-      if (game)
+      if (game) {
         await this.redisService.submitEncounterGameAnswer(
           encounterId,
           answerIndex,
         );
+        this.redisService.publishNewGameAnswer(encounterId);
+      }
 
       return res.json({
         message: 'Successfully submitted answer.',
