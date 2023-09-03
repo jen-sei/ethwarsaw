@@ -57,7 +57,7 @@ export class EncountersController {
     @Param('answerIndex') answerIndex: string,
   ) {
     try {
-      const game = await this.redisService.getEncounterGame(encounterId);
+      let game = await this.redisService.getEncounterGame(encounterId);
 
       const [_, answer] = game;
       if (answer) {
@@ -69,8 +69,10 @@ export class EncountersController {
           encounterId,
           answerIndex,
         );
-        this.redisService.publishNewGameAnswer(encounterId);
+        await this.redisService.publishNewGameAnswer(encounterId);
       }
+
+      game = await this.redisService.getEncounterGame(encounterId);
 
       return res.json({
         message: 'Successfully submitted answer.',
